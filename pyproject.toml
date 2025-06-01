@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "bittencert"
+version = "0.0.1"
+description = "Generate and verify TLS certs via bittensor keypairs"
+authors = ["Jon Durbin <jon@jondurbin.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+substrate-interface = "^1.7.11"
+aiohttp = "^3.10.0"
+cryptography = "^44.0.0"
+
+[tool.poetry.group.test.dependencies]
+fastapi = "^0.115.5"
+uvicorn = "^0.32.0"
+pytest = "^8.2.0"
+pytest-asyncio = "^1.0.0"
+async-lru = "^2.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
