@@ -176,14 +176,11 @@ class BittencertConnector(TCPConnector):
     async def _create_connection(self, req, traces, timeout):
         host = req.url.host
         port = req.url.port or 443
-        try:
-            if (entry := await self.cert_store.get_valid(host, port, self.ss58_address)) is None:
-                entry = await self._verify_and_store_certificate(host, port)
-            ssl_context = ssl.create_default_context()
-            ssl_context.load_verify_locations(cadata=entry.pem_bytes.decode("utf-8"))
-            self._ssl = ssl_context
-        except Exception as e:
-            raise Exception(f"Bittensor certificate verification failed: {e}")
+        if (entry := await self.cert_store.get_valid(host, port, self.ss58_address)) is None:
+            entry = await self._verify_and_store_certificate(host, port)
+        ssl_context = ssl.create_default_context()
+        ssl_context.load_verify_locations(cadata=entry.pem_bytes.decode("utf-8"))
+        self._ssl = ssl_context
         return await super()._create_connection(req, traces, timeout)
 
     async def _fetch_server_certificate(self, host: str, port: int) -> bytes:

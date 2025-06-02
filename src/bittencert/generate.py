@@ -4,6 +4,7 @@ Certificate generation.
 
 import datetime
 import uuid
+import ipaddress
 from typing import Tuple
 from cryptography import x509
 from cryptography.x509.oid import NameOID
@@ -81,11 +82,19 @@ def generate(
     )
 
     # Add subject alternative names.
-    if sans:
-        builder = builder.add_extension(
-            x509.SubjectAlternativeName([x509.DNSName(name) for name in sans]),
-            critical=False,
-        )
+    if not sans:
+        sans = [cn]
+    san_list = []
+    for san in sans:
+        try:
+            ip = ipaddress.ip_address(san)
+            san_list.append(x509.IPAddress(ip))
+        except ValueError:
+            san_list.append(x509.DNSName(san))
+    builder = builder.add_extension(
+        x509.SubjectAlternativeName(san_list),
+        critical=False,
+    )
 
     # Sign and done.
     cert = builder.sign(private_key, hashes.SHA256())
